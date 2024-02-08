@@ -48,4 +48,4 @@ fi
 /comfyui/venv/bin/pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
 # Start ComfyUI.
-exec /comfyui/venv/bin/python main.py --listen 0.0.0.0 --preview-method auto
+exec /comfyui/venv/bin/python main.py --listen 0.0.0.0 --preview-method auto --output-directory /stable_difussion/output
