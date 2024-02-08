@@ -13,6 +13,8 @@ RUN DEBIAN_FRONTEND=noninteractive \
     apt-get install -y --no-install-recommends \
     git
 
+RUN python -m pip install --upgrade pip
+
 # Copy in the init script.
 COPY ./init.sh /init.sh
 RUN chmod +x /init.sh

@@ -31,6 +31,9 @@ if [ ! -d "./venv" ]; then
     python3 -m venv venv
 fi
 
+# Upgrade pip
+/comfyui/venv/bin/python -m pip install --upgrade pip
+
 # Install PyTorch based on the value of USE_XFORMERS, because otherwise xformers overrides the PyTorch version.
 if [ "$USE_XFORMERS" = true ]; then
     /comfyui/venv/bin/pip install xformers torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121
@@ -40,6 +43,9 @@ fi
 
 # Install other dependencies.
 /comfyui/venv/bin/pip install -r requirements.txt
+
+# install oonxruntime-gpu for controlnet
+/comfyui/venv/bin/pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
 # Start ComfyUI.
 exec /comfyui/venv/bin/python main.py --listen 0.0.0.0 --preview-method auto
