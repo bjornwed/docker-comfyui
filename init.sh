@@ -2,6 +2,7 @@
 set -e
 
 COMFYUI_COMMIT=${COMFYUI_COMMIT:-master}
+COMFYUI_MANAGER_COMMIT=${COMFYUI_MANAGER_COMMIT:-main}
 USE_XFORMERS=${USE_XFORMERS:-false}
 
 # Clone ComfyUI if it doesn't exist.
@@ -13,6 +14,17 @@ fi
 cd /comfyui
 git fetch
 git checkout $COMFYUI_COMMIT
+
+# Install ComfyUI Manager
+if [ ! -d "/comfyui/custom_nodes/ComfyUI-Manager/.git" ]; then
+    git clone https://github.com/ltdrdata/ComfyUI-Manager.git /comfyui/custom_nodes/ComfyUI-Manager
+fi
+
+cd /comfyui/custom_nodes/ComfyUI-Manager
+git fetch
+git checkout $COMFYUI_MANAGER_COMMIT
+
+cd /comfyui
 
 # Create a virtualenv if one doesn't exist.
 if [ ! -d "./venv" ]; then
