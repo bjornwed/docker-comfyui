@@ -1,7 +1,8 @@
 version: "3"
 services:
   comfyui:
-    build: .
+    build: ./docker
+    image: comfyui:v1
     ports:
       # Web UI is exposed on port 8188 inside the container.
       - "8188:8188"
@@ -9,12 +10,16 @@ services:
       # Set to a commit hash here to build and use that commit instead of the latest.
       COMFYUI_COMMIT: "master"
       COMFYUI_MANAGER_COMMIT: "main"
+      COMFYUI_INSTANTID_COMMIT: "main"
       # Set to "true" on some older GPUs (RTX 2xxx, some RTX 3xxx) to
       # use greater speedups than the default PyTorch Cross Attention.
       USE_XFORMERS: "false"
+      # Output directory on external mounted volume "stable_diffusion"
+      COMFYUI_OUTPUT: "/stable_diffusion/output"
     volumes:
       # Since a lot of custom nodes in ComfyUI are stateful, we need to persist the whole
       # folder across reboots to ensure they don't redownload their models or data on every container restart.
+      # volumes mounted for comfyui, output and models
       - comfyui:/comfyui
       - stable_diffusion:/stable_diffusion
     # Make sure you've installed the NVIDIA Container Toolkit and restart the Docker daemon before first use.
@@ -26,6 +31,7 @@ services:
               count: 1
               capabilities: [gpu]
 volumes:
+# Existing volumes, set external:true or compose will try to recreate them 
   comfyui:
     external: true
   stable_diffusion:
