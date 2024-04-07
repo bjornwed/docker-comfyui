@@ -3,6 +3,7 @@ services:
   comfyui:
     build: ./docker
     image: comfyui:v1
+    # command: ["sleep","infinity"]
     ports:
       # Web UI is exposed on port 8188 inside the container.
       - "8188:8188"
@@ -19,8 +20,10 @@ services:
     volumes:
       # Since a lot of custom nodes in ComfyUI are stateful, we need to persist the whole
       # folder across reboots to ensure they don't redownload their models or data on every container restart.
-      # volumes mounted for comfyui, output and models
-      - comfyui:/comfyui
+      # volumes mounted for comfyui, models and output (stable_diffusion)
+      # Note: running Docker Desktop on Windows, use named volumes (WSL) and not bind mounts as this will have a huge impact on performance!
+      - comfyui_wsl:/comfyui
+      - comfyui_models:/comfyui_models
       - stable_diffusion:/stable_diffusion
     # Make sure you've installed the NVIDIA Container Toolkit and restart the Docker daemon before first use.
     deploy:
@@ -32,7 +35,9 @@ services:
               capabilities: [gpu]
 volumes:
 # Existing volumes, set external:true or compose will try to recreate them 
-  comfyui:
+  comfyui_wsl:
+    external: true
+  comfyui_models:
     external: true
   stable_diffusion:
     external: true
