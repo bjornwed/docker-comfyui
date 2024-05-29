@@ -2,11 +2,16 @@
 Edit config.yaml and change 
 - annotator_ckpts_path: "/stable_diffusion/models/controlnet"  
 
+# Advanced Controlnet 
+https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet
+
 # Lora tag loader
 
 # PromptStylers
 
 # Impact Pack
+https://github.com/ltdrdata/ComfyUI-Impact-Pack
+Custom nodes pack for ComfyUI This custom node helps to conveniently enhance images through Detector, Detailer, Upscaler, Pipe, and more
 
 # Instant ID
 Requires the following adapters / checkpoints
@@ -37,3 +42,9 @@ https://github.com/ssitu/ComfyUI_UltimateSDUpscale
 
 # IPAdapter Plus
 https://github.com/cubiq/ComfyUI_IPAdapter_plus
+
+# Comfyui workspace manager
+https://github.com/11cafe/comfyui-workspace-manager
+
+# ComfyUI-IF_AI_tools
+https://github.com/if-ai/ComfyUI-IF_AI_tools

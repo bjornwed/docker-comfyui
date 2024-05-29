@@ -41,6 +41,10 @@ cd /comfyui
 # as this may be overwritten by custom nodes
 /comfyui/venv/bin/python -m pip install onnxruntime-gpu --upgrade --no-deps --force-reinstall --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ 
  
+# Reinstall Trasformers with this command line "python.exe -m pip install transformers"
+
+# Install CMake, required to compile dlib used by custom node FaceAnalysis
+# http://dlib.net/compile.html
 
 
 # Start ComfyUI.

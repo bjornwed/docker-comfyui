@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED=1 \
     COMFYUI_MANAGER_COMMIT=main \
     COMFYUI_INSTANTID_COMMIT=main \
     COMFYUI_OUTPUT=/stable_diffusion/output \
-    USE_XFORMERS=false \
+    USE_XFORMERS=true \
     TINI_VERSION=v0.19.0 \
     # path for tensorrt
     LD_LIBRARY_PATH=/comfyui/venv/lib/python3.11/site-packages/tensorrt_lean_libs \
@@ -15,7 +15,7 @@ ENV PYTHONUNBUFFERED=1 \
 WORKDIR /comfyui
 
 # Install system dependencies and clean up in one layer
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential wget git && \
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential wget git ffmpeg libsm6 libxext6 cmake && \
     wget -O /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && \
     chmod +x /tini && \
     rm -rf /var/lib/apt/lists/*

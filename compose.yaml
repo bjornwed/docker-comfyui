@@ -1,4 +1,3 @@
-version: "3"
 services:
   comfyui:
     build: ./docker
@@ -7,6 +6,8 @@ services:
     ports:
       # Web UI is exposed on port 8188 inside the container.
       - "8188:8188"
+    networks:
+      - docker-comfyui
     environment:
       # Set to a commit hash here to build and use that commit instead of the latest.
       COMFYUI_COMMIT: "master"
@@ -40,4 +41,7 @@ volumes:
   comfyui_models:
     external: true
   stable_diffusion:
+    external: true
+networks:
+  docker-comfyui:
     external: true
