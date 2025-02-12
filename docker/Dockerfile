@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
     USE_XFORMERS=true \
     TINI_VERSION=v0.19.0 \
     # path for tensorrt
-    LD_LIBRARY_PATH=/comfyui/venv/lib/python3.11/site-packages/tensorrt_lean_libs \
+    LD_LIBRARY_PATH=/comfyui/venv/lib/python3.11/site-packages/tensorrt_libs \
     NUMEXPR_MAX_THREADS=16
 
 WORKDIR /comfyui
@@ -23,10 +23,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 # Create virtual environment and upgrade pip, install Python packages in one layer
 RUN python3 -m venv venv && \
     venv/bin/python -m pip install --upgrade pip && \
-    venv/bin/python -m pip install --upgrade setuptools wheel
- 
+    venv/bin/python -m pip install --upgrade setuptools wheel  && \                     
+    venv/bin/python -m pip install protobuf coloredlogs flatbuffers tensorrt 
+# NOTE: May need to manually remove site-packages from venv/lib/python3.11 to clean up if getting conflicts with various versions of xformers and pytorch
+
 # Install PyTorch based on the value of USE_XFORMERS, because otherwise xformers overrides the PyTorch version.
-RUN    if [ "$USE_XFORMERS" = "true" ]; then venv/bin/pip install xformers torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121; else venv/bin/pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121; fi 
+RUN venv/bin/python -m pip install xformers torch==2.2.1+cu121 torchvision torchaudio --upgrade --force-reinstall --index-url https://download.pytorch.org/whl/cu121
+
+# install tensorflow
+# RUN venv/bin/python -m pip install tensorflow[and-cuda]    
+
+# upgrade xformers, torch, torchvision and torchaudio to latest version 
+# venv/bin/python -m pip install torch==2.2.1+cu121 torchvision torchaudio -f https://download.pytorch.org/whl/torch_stable.html --extra-index-url https://download.pytorch.org/whl/cu121
+# venv/bin/python -m pip install xformers==0.0.25
+# venv/bin/python -m pip install torchvision==0.17.1
+# RUN venv/bin/python -m pip install --upgrade xformers torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121 
+
+# install apex
+# RUN venv/bin/python -m pip install apex
 
 ENTRYPOINT ["/tini", "--"]
 
