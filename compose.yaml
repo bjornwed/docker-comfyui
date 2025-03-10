@@ -1,7 +1,7 @@
 services:
   comfyui:
     build: ./docker_new
-    image: comfyui_python_312:v1.0
+    image: python_312:latest
     # command: ["sleep","infinity"]
     ports:
       # Web UI is exposed on port 8188 inside the container.
@@ -13,11 +13,11 @@ services:
       # Persist python site-packages as no python env is being used
       - site-packages:/usr/local/lib/python3.12/site-packages
       # Persist actual comfyui app
-      - comfyui:/comfyui
+      - comfyui_app:/comfyui
       # Persist models. Change extra_model_paths.yaml
       - comfyui_models:/comfyui_models
       # Persist in/out folder. Bind mount Windows drive to access files from Windows
-      - comfyui_in_out:/comfyui_in_out
+      - D:\comfyui_in_out:/comfyui_in_out
     # Make sure you've installed the NVIDIA Container Toolkit and restart the Docker daemon before first use.
     deploy:
       resources:
@@ -30,7 +30,7 @@ volumes:
 # Existing volumes, set external:true or compose will try to recreate them 
   site-packages:
     external: true
-  comfyui:
+  comfyui_app:
     external: true
   comfyui_models:
     external: true

@@ -11,7 +11,7 @@ cd /comfyui
 # required to persist container restart
 
 # upgrade pip
-pip install --upgrade pip
+# pip install --upgrade pip
 
 # Clone ComfyUI if it doesn't exist.
 if [ ! -d "/comfyui/.git" ]; then
@@ -22,7 +22,7 @@ if [ ! -d "/comfyui/.git" ]; then
 fi
 # Checkout the specified commit.
 git fetch
-git checkout $COMFYUI_COMMIT
+git checkout -f $COMFYUI_COMMIT
 
 # Install ComfyUI Manager
 if [ ! -d "/comfyui/custom_nodes/ComfyUI-Manager/.git" ]; then
@@ -36,15 +36,15 @@ cd /comfyui
 
 # Install dependencies.
 # As this might change on new commits, it cannot be done during image build
-pip install -r requirements.txt
+pip install -r requirements.txt --no-cache-dir 
 
-# Install xformers
-/comfyui/venv/bin/python -m pip install xformers
+# Install xformers may not be required, and if so install in image
+# /comfyui/venv/bin/python -m pip install xformers
 
 # install oonxruntime-gpu for controlnet
 # as this may be overwritten by custom nodes
-pip install onnxruntime-gpu --upgrade --no-deps --force-reinstall --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ 
+# pip install onnxruntime-gpu --upgrade --no-deps --force-reinstall --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ 
 
 
 # Run ComfyUI
-exec /comfyui/venv/bin/python main.py --listen 0.0.0.0 --preview-method auto --output-directory $COMFYUI_OUTPUT --input-directory $COMFYUI_INPUT
+exec python main.py --listen 0.0.0.0 --preview-method auto --output-directory $COMFYUI_OUTPUT --input-directory $COMFYUI_INPUT
