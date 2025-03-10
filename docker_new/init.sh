@@ -25,10 +25,12 @@ git fetch
 git checkout -f $COMFYUI_COMMIT
 
 # Install ComfyUI Manager
-if [ ! -d "/comfyui/custom_nodes/ComfyUI-Manager/.git" ]; then
-    git clone https://github.com/ltdrdata/ComfyUI-Manager.git /comfyui/custom_nodes/ComfyUI-Manager
+# Note: base directory changed to /comfyui_models for
+# models, custom_nodes, input, output, temp and user directories
+if [ ! -d "/comfyui_models/custom_nodes/ComfyUI-Manager/.git" ]; then
+    git clone https://github.com/ltdrdata/ComfyUI-Manager.git /comfyui_models/custom_nodes/ComfyUI-Manager
 fi
-cd /comfyui/custom_nodes/ComfyUI-Manager
+cd /comfyui_models/custom_nodes/ComfyUI-Manager
 git fetch
 git checkout $COMFYUI_MANAGER_COMMIT
 
@@ -47,4 +49,4 @@ pip install -r requirements.txt --no-cache-dir
 
 
 # Run ComfyUI
-exec python main.py --listen 0.0.0.0 --preview-method auto --output-directory $COMFYUI_OUTPUT --input-directory $COMFYUI_INPUT
+exec python main.py --listen 0.0.0.0 --preview-method auto --output-directory $COMFYUI_OUTPUT --input-directory $COMFYUI_INPUT --base-directory /comfyui_models
