@@ -5,6 +5,7 @@ ENV PYTHONUNBUFFERED=1 \
     COMFYUI_COMMIT=master \
     COMFYUI_MANAGER_COMMIT=main \
     COMFYUI_INSTANTID_COMMIT=main \
+    COMFYUI_INPUT=/comfy_in_out/input \
     COMFYUI_OUTPUT=/comfy_in_out/output \
     TINI_VERSION=v0.19.0 \
     # path for tensorrt
@@ -19,14 +20,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
     chmod +x /tini && \
     rm -rf /var/lib/apt/lists/*
 
-# Create virtual environment and upgrade pip, install Python packages in one layer
+# Upgrade pip, install Python packages in one layer
 RUN pip install --upgrade pip && \
     pip install --upgrade setuptools wheel  && \                     
     pip install protobuf coloredlogs flatbuffers tensorrt 
 # NOTE: May need to manually remove site-packages from venv/lib/python3.11 to clean up if getting conflicts with various versions of xformers and pytorch
 
 # Install PyTorch based on the value of USE_XFORMERS, because otherwise xformers overrides the PyTorch version.
-RUN venv/bin/python -m pip install xformers torch==2.2.1+cu121 torchvision torchaudio --upgrade --force-reinstall --index-url https://download.pytorch.org/whl/cu121
+RUN pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu126
+
+# RUN venv/bin/python -m pip install xformers torch==2.2.1+cu121 torchvision torchaudio --upgrade --force-reinstall --index-url https://download.pytorch.org/whl/cu121
 
 # install tensorflow
 # RUN venv/bin/python -m pip install tensorflow[and-cuda]    

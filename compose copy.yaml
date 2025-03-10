@@ -1,23 +1,28 @@
 services:
   comfyui:
-    build: ./docker_new
-    image: comfyui_python_312:v1.0
+    build: ./docker_python
+    image: comfyui_python:v1.0
     # command: ["sleep","infinity"]
     ports:
       # Web UI is exposed on port 8188 inside the container.
       - "8188:8188"
     networks:
       - docker-comfyui
+    environment:
+      # Set to a commit hash here to build and use that commit instead of the latest.
+      COMFYUI_COMMIT: "master"
+      COMFYUI_MANAGER_COMMIT: "main"
+      COMFYUI_INSTANTID_COMMIT: "main"
+      # Output directory on external mounted volume "stable_diffusion"
+      COMFYUI_OUTPUT: "/stable_diffusion/output"
     volumes:
+      # Since a lot of custom nodes in ComfyUI are stateful, we need to persist the whole
+      # folder across reboots to ensure they don't redownload their models or data on every container restart.
+      # volumes mounted for comfyui, models and output (stable_diffusion)
       # Note: running Docker Desktop on Windows, use named volumes (WSL) and not bind mounts as this will have a huge impact on performance!
-      # Persist python site-packages as no python env is being used
-      - site-packages:/usr/local/lib/python3.12/site-packages
-      # Persist actual comfyui app
       - comfyui:/comfyui
-      # Persist models. Change extra_model_paths.yaml
       - comfyui_models:/comfyui_models
-      # Persist in/out folder. Bind mount Windows drive to access files from Windows
-      - comfyui_in_out:/comfyui_in_out
+      - stable_diffusion:/stable_diffusion
     # Make sure you've installed the NVIDIA Container Toolkit and restart the Docker daemon before first use.
     deploy:
       resources:
@@ -28,13 +33,11 @@ services:
               capabilities: [gpu]
 volumes:
 # Existing volumes, set external:true or compose will try to recreate them 
-  site-packages:
-    external: true
   comfyui:
     external: true
   comfyui_models:
     external: true
-  comfyui_in_out:
+  stable_diffusion:
     external: true
 networks:
   docker-comfyui:

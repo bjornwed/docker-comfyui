@@ -3,18 +3,15 @@ set -e
 
 COMFYUI_COMMIT=${COMFYUI_COMMIT:-master}
 COMFYUI_MANAGER_COMMIT=${COMFYUI_MANAGER_COMMIT:-main}
-USE_XFORMERS=${USE_XFORMERS:-false}
-COMFYUI_OUTPUT=${COMFYUI_OUTPUT:-/comfyui/output}
-LD_LIBRARY_PATH=${LD_LIBRARY_PATH}
+COMFYUI_INPUT=${COMFYUI_INPUT:-/comfyui_in_out/input}
+COMFYUI_OUTPUT=${COMFYUI_OUTPUT:-/comfyui_in_out/output}
 
 cd /comfyui
 # create virtual env if not exists
 # required to persist container restart
-if [ ! -d "./venv" ]; then
-    python -m venv venv
-fi
+
 # upgrade pip
-/comfyui/venv/bin/python -m pip install --upgrade pip
+pip install --upgrade pip
 
 # Clone ComfyUI if it doesn't exist.
 if [ ! -d "/comfyui/.git" ]; then
@@ -39,15 +36,15 @@ cd /comfyui
 
 # Install dependencies.
 # As this might change on new commits, it cannot be done during image build
-/comfyui/venv/bin/pip install -r requirements.txt
+pip install -r requirements.txt
 
 # Install xformers
 /comfyui/venv/bin/python -m pip install xformers
 
 # install oonxruntime-gpu for controlnet
 # as this may be overwritten by custom nodes
-/comfyui/venv/bin/python -m pip install onnxruntime-gpu --upgrade --no-deps --force-reinstall --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ 
+pip install onnxruntime-gpu --upgrade --no-deps --force-reinstall --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ 
 
 
 # Run ComfyUI
-exec /comfyui/venv/bin/python main.py --listen 0.0.0.0 --preview-method auto --output-directory $COMFYUI_OUTPUT 
+exec /comfyui/venv/bin/python main.py --listen 0.0.0.0 --preview-method auto --output-directory $COMFYUI_OUTPUT --input-directory $COMFYUI_INPUT
