@@ -1,4 +1,4 @@
-# tmp
+
 #!/bin/bash
 set -e
 
