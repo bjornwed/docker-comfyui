@@ -24,3 +24,10 @@
 comfyui\custom_nodes\comfyui_controlnet_aux\config.example.yaml
 - rename to config.xml
 - change annotator_ckpts_path: "/comfyui_models/models/controlnet". 
+
+# Upscaler TensorRT
+https://github.com/yuvraj108c/ComfyUI-Upscaler-Tensorrt?tab=readme-ov-file
+- download oonx models: 
+
+- export exported engine: /comfyui/models/tensorrt/upscaler/RealESRGAN_x4.engine
+- /comfyui/venv/bin/python export_trt.py 

@@ -1,7 +1,7 @@
 services:
   comfyui:
-    build: ./docker
-    image: comfyui:v1
+    build: ./docker_python
+    image: comfyui_python:v1.0
     # command: ["sleep","infinity"]
     ports:
       # Web UI is exposed on port 8188 inside the container.
@@ -13,9 +13,6 @@ services:
       COMFYUI_COMMIT: "master"
       COMFYUI_MANAGER_COMMIT: "main"
       COMFYUI_INSTANTID_COMMIT: "main"
-      # Set to "true" on some older GPUs (RTX 2xxx, some RTX 3xxx) to
-      # use greater speedups than the default PyTorch Cross Attention.
-      USE_XFORMERS: "false"
       # Output directory on external mounted volume "stable_diffusion"
       COMFYUI_OUTPUT: "/stable_diffusion/output"
     volumes:
@@ -23,7 +20,7 @@ services:
       # folder across reboots to ensure they don't redownload their models or data on every container restart.
       # volumes mounted for comfyui, models and output (stable_diffusion)
       # Note: running Docker Desktop on Windows, use named volumes (WSL) and not bind mounts as this will have a huge impact on performance!
-      - comfyui_wsl:/comfyui
+      - comfyui:/comfyui
       - comfyui_models:/comfyui_models
       - stable_diffusion:/stable_diffusion
     # Make sure you've installed the NVIDIA Container Toolkit and restart the Docker daemon before first use.
@@ -36,7 +33,7 @@ services:
               capabilities: [gpu]
 volumes:
 # Existing volumes, set external:true or compose will try to recreate them 
-  comfyui_wsl:
+  comfyui:
     external: true
   comfyui_models:
     external: true
