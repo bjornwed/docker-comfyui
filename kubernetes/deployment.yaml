@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comfyui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: comfyui
+  template:
+    metadata:
+      labels:
+        app: comfyui
+    spec:
+      containers:
+      - name: comfyui
+        image: python_312:latest
+        ports:
+        - containerPort: 8188
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+        volumeMounts:
+        - mountPath: /usr/local/lib/python3.12/site-packages
+          name: site-packages
+        - mountPath: /comfyui
+          name: comfyui-app
+        - mountPath: /comfyui_models
+          name: comfyui-models
+        - mountPath: /comfyui_in_out
+          name: comfyui-in-out
+      volumes:
+      - name: site-packages
+        persistentVolumeClaim:
+          claimName: site-packages-pvc
+      - name: comfyui-app
+        persistentVolumeClaim:
+          claimName: comfyui-app-pvc
+      - name: comfyui-models
+        persistentVolumeClaim:
+          claimName: comfyui-models-pvc
+      - name: comfyui-in-out
+        persistentVolumeClaim:
+          claimName: comfyui-in-out-pvc

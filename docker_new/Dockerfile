@@ -21,11 +21,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 
 # Upgrade pip, install Python packages in one layer
 # protobuf, coloredlogs
-RUN pip install --upgrade pip && \
-    pip install --upgrade setuptools wheel  && \
-    pip install protobuf coloredlogs flatbuffers && \ 
-    pip install onnxruntime-gpu --upgrade --no-deps --force-reinstall --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ && \
-    pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu126
+RUN pip install --upgrade pip --no-cache-dir && \
+    pip install --upgrade setuptools wheel  --no-cache-dir && \
+    pip install protobuf coloredlogs flatbuffers --no-cache-dir 
+
+RUN pip install onnxruntime-gpu --upgrade --no-deps --force-reinstall --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ --no-cache-dir 
+RUN pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu126 --no-cache-dir && \
+    pip install triton sageattention --no-cache-dir
 
 
 ENTRYPOINT ["/tini", "--"]
