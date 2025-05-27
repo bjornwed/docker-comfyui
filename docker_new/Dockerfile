@@ -1,5 +1,7 @@
 FROM python:3.12-slim 
-COPY --from=ghcr.io/astral-sh/uv:0.6.10 /uv /uvx /bin/
+# Bring in uv package manager binary from a specific commit
+# Use a specific commit to make sure the image is cached and reproducible
+COPY --from=ghcr.io/astral-sh/uv@sha256:57da96c4557243fc0a732817854084e81af9393f64dc7d172f39c16465b5e2ba /uv /uvx /bin/
 
 # Set environment variables in a single layer
 ENV PYTHONUNBUFFERED=1 \

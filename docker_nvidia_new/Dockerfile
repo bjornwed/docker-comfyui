@@ -1,7 +1,9 @@
 FROM nvcr.io/nvidia/cuda:12.8.1-cudnn-devel-ubuntu24.04
 
-# Bring in uv package manager binary
-COPY --from=ghcr.io/astral-sh/uv:0.6.10 /uv /uvx /bin/
+# Bring in uv package manager binary from a specific commit
+# Use a specific commit to make sure the image is cached and reproducible
+COPY --from=ghcr.io/astral-sh/uv@sha256:57da96c4557243fc0a732817854084e81af9393f64dc7d172f39c16465b5e2ba /uv /uvx /bin/
+
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -52,9 +54,9 @@ RUN uv pip install --upgrade pip setuptools wheel protobuf coloredlogs flatbuffe
 
 # Install Sage Attention 2 https://github.com/thu-ml/SageAttention
 
-RUN git clone https://github.com/thu-ml/sageattention.git && \
-    cd sageattention && \
-    uv pip install -e . --system --no-build-isolation    
+# RUN git clone https://github.com/thu-ml/sageattention.git && \
+#     cd sageattention && \
+#     uv pip install -e . --system --no-build-isolation    
 
 # Clean up apt cache to reduce image size
 RUN apt clean && rm -rf /var/lib/apt/lists/* /root/.cache /tmp/*
