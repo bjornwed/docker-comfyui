@@ -1,9 +1,34 @@
+# Stage 1: Build Python 3.12.3 from source
+FROM ubuntu:24.04 AS python-builder
+
+ARG PYTHON_VERSION=3.12.3
+
+RUN apt update && \
+    apt install -y --no-install-recommends \
+    build-essential wget libssl-dev zlib1g-dev libncurses5-dev \
+    libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev \
+    libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev tk-dev uuid-dev \
+    libffi-dev ca-certificates
+
+WORKDIR /tmp
+
+# Use Docker build cache for source builds
+RUN --mount=type=cache,target=/root/.cache \
+    wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
+    tar -xzf Python-${PYTHON_VERSION}.tgz && \
+    cd Python-${PYTHON_VERSION} && \
+    ./configure --enable-optimizations && \
+    make -j"$(nproc)" && \
+    make altinstall && \
+    rm -rf /tmp/*
+
+# Stage 2: Final runtime image
 FROM nvcr.io/nvidia/cuda:12.8.1-cudnn-devel-ubuntu24.04
 
-# Bring in uv package manager binary from a specific commit
-# Use a specific commit to make sure the image is cached and reproducible
 COPY --from=ghcr.io/astral-sh/uv@sha256:57da96c4557243fc0a732817854084e81af9393f64dc7d172f39c16465b5e2ba /uv /uvx /bin/
-
+COPY --from=python-builder /usr/local/bin/python3.12 /usr/local/bin/
+COPY --from=python-builder /usr/local/bin/pip3.12 /usr/local/bin/
+COPY --from=python-builder /usr/local/lib/python3.12 /usr/local/lib/python3.12
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -21,24 +46,15 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /comfyui
 
-# Install system dependencies and Python 3.12.3 from source
-RUN apt update -y && \
-    apt upgrade -y && \
+# Install system dependencies
+RUN apt update && \
     apt install -y --no-install-recommends \
-    build-essential wget git ffmpeg libsm6 libxext6 cmake \
-    libssl-dev zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev \
-    libsqlite3-dev libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev \
-    liblzma-dev tk-dev uuid-dev libffi-dev && \
+    wget git ffmpeg libsm6 libxext6 cmake && \
     wget -O /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && \
-    chmod +x /tini && \
-    wget https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tgz && \
-    tar -xzf Python-3.12.3.tgz && \
-    cd Python-3.12.3 && \
-    ./configure --enable-optimizations && \
-    make -j$(nproc) && \
-    make altinstall && \
-    cd .. && rm -rf Python-3.12.3 Python-3.12.3.tgz && \
-    ln -s /usr/local/bin/python3.12 /usr/bin/python3 && \
+    chmod +x /tini
+
+# Use Python 3.12 by default
+RUN ln -s /usr/local/bin/python3.12 /usr/bin/python3 && \
     ln -s /usr/local/bin/pip3.12 /usr/bin/pip3 && \
     python3 -m ensurepip && \
     python3 -m pip install --upgrade pip
