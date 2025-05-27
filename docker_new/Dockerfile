@@ -23,12 +23,28 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
     chmod +x /tini && \
     rm -rf /var/lib/apt/lists/*
 
+# Install cuda toolkit. Required for Sage Attention 2 compile
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/cuda-keyring_1.1-1_all.deb && \
+    dpkg -i cuda-keyring_1.1-1_all.deb && \
+    apt-get update && \
+    apt-get -y install cuda-toolkit-12-8 && \
+    rm -rf /var/lib/apt/lists/*
+
+
 # Upgrade pip, install Python packages in one layer
 # protobuf, coloredlogs
-RUN uv pip install --upgrade pip --no-cache-dir --system
-RUN uv pip install setuptools wheel protobuf coloredlogs flatbuffers triton sageattention --no-cache-dir  --system
-RUN uv pip install torch torchvision torchaudio --system --no-cache-dir  --extra-index-url https://download.pytorch.org/whl/cu126 --index-strategy unsafe-best-match
-RUN uv pip install onnxruntime-gpu  --system --no-cache-dir --force-reinstall --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ --index-strategy unsafe-best-match
+RUN uv pip install --upgrade pip setuptools wheel protobuf coloredlogs flatbuffers \
+    onnxruntime-gpu torch torchvision torchaudio triton sageattention \
+    --system --no-cache-dir --force-reinstall \
+    --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ \
+    --extra-index-url https://download.pytorch.org/whl/cu126 \
+    --index-strategy unsafe-best-match
+
+# Install Sage Attention 2 https://github.com/thu-ml/SageAttention
+
+# RUN git clone https://github.com/thu-ml/sageattention.git && \
+#     cd sageattention && \
+#     uv pip install -e . --system --no-build-isolation
 
 ENTRYPOINT ["/tini", "--"] 
 COPY ./init.sh /init.sh
