@@ -70,9 +70,10 @@ RUN uv pip install --upgrade pip setuptools wheel protobuf coloredlogs flatbuffe
 
 # Install Sage Attention 2 https://github.com/thu-ml/SageAttention
 
-# RUN git clone https://github.com/thu-ml/sageattention.git && \
-#     cd sageattention && \
-#     uv pip install -e . --system --no-build-isolation    
+WORKDIR / 
+RUN git clone https://github.com/thu-ml/sageattention.git && \
+    cd sageattention && \
+    uv pip install -e . --system --no-build-isolation    
 
 # Clean up apt cache to reduce image size
 RUN apt clean && rm -rf /var/lib/apt/lists/* /root/.cache /tmp/*
