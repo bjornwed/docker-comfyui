@@ -1,7 +1,7 @@
 services:
   comfyui:
-    build: ./docker_new
-    image: python_312:latest
+    build: ./docker_nvidia_new
+    image: nvidia12_8:latest
     # command: ["sleep","infinity"]
     ports:
       # Web UI is exposed on port 8188 inside the container.
