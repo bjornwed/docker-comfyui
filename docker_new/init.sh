@@ -38,7 +38,7 @@ cd /comfyui
 
 # Install dependencies.
 # As this might change on new commits, it cannot be done during image build
-uv pip install -r requirements.txt --no-cache-dir 
+uv pip install -r requirements.txt --no-cache-dir --system
 
 # Install xformers may not be required, and if so install in image
 # /comfyui/venv/bin/python -m pip install xformers

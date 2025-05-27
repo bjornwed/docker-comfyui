@@ -17,24 +17,22 @@ ENV PYTHONUNBUFFERED=1 \
     COMPOSE_BAKE=true
 WORKDIR /comfyui
 
-COPY ./init.sh /init.sh
-
 # Install system dependencies and clean up in one layer
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential wget git ffmpeg libsm6 libxext6 cmake && \
     wget -O /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && \
     chmod +x /tini && \
-    chmod +x /init.sh && \
     rm -rf /var/lib/apt/lists/*
 
 # Upgrade pip, install Python packages in one layer
 # protobuf, coloredlogs
-RUN uv pip install --upgrade pip setuptools wheel protobuf coloredlogs flatbuffers \
-    onnxruntime-gpu torch torchvision torchaudio triton sageattention \
-    --system --no-cache-dir --force-reinstall \
-    --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ \
-    --extra-index-url https://download.pytorch.org/whl/cu126 \
-    --index-strategy unsafe-best-match
+RUN uv pip install --upgrade pip --no-cache-dir --system
+RUN uv pip install setuptools wheel protobuf coloredlogs flatbuffers triton sageattention --no-cache-dir  --system
+RUN uv pip install torch torchvision torchaudio --system --no-cache-dir  --extra-index-url https://download.pytorch.org/whl/cu126 --index-strategy unsafe-best-match
+RUN uv pip install onnxruntime-gpu  --system --no-cache-dir --force-reinstall --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ --index-strategy unsafe-best-match
 
 ENTRYPOINT ["/tini", "--"] 
+COPY ./init.sh /init.sh
+RUN chmod +x /init.sh 
+
 EXPOSE 8188
 CMD ["/init.sh"]
